@@ -46,7 +46,7 @@ const Posts = ({ feedType, username, userId }) => {
 
 	useEffect(() => {
 		refetch();
-	}, [feedType, refetch, username]);
+	}, [feedType, refetch, username]);//refetch is necessary to getback data of the refetched user only and not the prev one
 
 	return (
 		<>
