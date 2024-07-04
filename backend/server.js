@@ -21,7 +21,7 @@ cloudinary.config({
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const __dirname = path.resolve();
+const __dirname = path.resolve();//deployment related
 
 app.use(express.json({ limit: "5mb" })); // to parse req.body
 // limit shouldn't be too high to prevent DOS
@@ -34,6 +34,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/notifications", notificationRoutes);
 
+//for deployment
 if (process.env.NODE_ENV === "production") {
 	app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
