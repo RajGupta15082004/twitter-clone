@@ -1,9 +1,31 @@
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+
+// import useFollow from "../../hooks/useFollow";
+
 import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
-import { USERS_FOR_RIGHT_PANEL } from "../../utils/db/dummy";
+import LoadingSpinner from "./LoadingSpinner";
 
 const RightPanel = () => {
-	const isLoading = false;
+	const { data: suggestedUsers, isLoading } = useQuery({
+		queryKey: ["suggestedUsers"],
+		queryFn: async () => {
+			try {
+				const res = await fetch("/api/users/suggested");
+				const data = await res.json();
+				if (!res.ok) {
+					throw new Error(data.error || "Something went wrong!");
+				}
+				return data;
+			} catch (error) {
+				throw new Error(error.message);
+			}
+		},
+	});
+
+	// const { follow, isPending } = useFollow();
+
+	if (suggestedUsers?.length === 0) return <div className='md:w-64 w-0'></div>;
 
 	return (
 		<div className='hidden lg:block my-4 mx-2'>
@@ -20,8 +42,7 @@ const RightPanel = () => {
 						</>
 					)}
 					{!isLoading &&
-						USERS_FOR_RIGHT_PANEL?.map((user) => (
-							//Navigation
+						suggestedUsers?.map((user) => (
 							<Link
 								to={`/profile/${user.username}`}
 								className='flex items-center justify-between gap-4'
@@ -43,12 +64,12 @@ const RightPanel = () => {
 								<div>
 									<button
 										className='btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm'
-										onClick={(e) => e.preventDefault()}
+										onClick={(e) => {
+											e.preventDefault();
+											follow(user._id);
+										}}
 									>
-										{/* e.preventDefault() prevents the default behavior of the button, which typically would cause the page to reload or change its state.
-In this case, it ensures that clicking the "Follow" button does not trigger a page reload or any other default browser behavior. */}
-
-										Follow
+										{/* {isPending ? <LoadingSpinner size='sm' /> : "Follow"} */}
 									</button>
 								</div>
 							</Link>
