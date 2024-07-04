@@ -22,12 +22,15 @@ const PORT=process.env.PORT || 5000;
 
 // console.log(process.env.MONGO_URI);
 
-app.use(express.json());//middleware=a regular func that runs betw request and response= we are using it to parese the req.body here
+app.use(express.json());//middleware=a regular func that runs betw request and response= we are using it to parse the req.body here  // Middleware for JSON: Adds a middleware to parse incoming JSON requests. It runs between the request and response phases, enabling req.body to contain the parsed JSON.
 
 app.use(express.urlencoded({extended:true}));//to parse form data(urlencoded)
+// Middleware for URL-encoded Data: Adds a middleware to parse URL-encoded data (e.g., form submissions). The extended: true option allows for rich objects and arrays to be encoded. The extended: true option allows for rich objects and arrays to be encoded. Rich objects refer to complex data structures that include arrays and nested objects
 
 app.use(cookieParser());
+//Cookie Parser Middleware: Adds a middleware to parse cookies attached to the client request object. It makes req.cookies available for accessing cookies.
 
+//Add all routes here
 app.use("/api/auth",authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/posts",postRoutes);

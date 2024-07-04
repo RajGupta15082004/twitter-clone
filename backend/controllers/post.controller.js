@@ -91,7 +91,7 @@ export const commentOnPost = async (req, res) => {
 export const likeUnlikePost = async (req, res) => {
 	try {
 		const userId = req.user._id;
-		const { id: postId } = req.params;
+		const { id: postId } = req.params;//Destructures the id from req.params and renames it to postId. This is the ID of the post that the user wants to like or unlike.
 
 		const post = await Post.findById(postId);
 
@@ -133,6 +133,7 @@ export const likeUnlikePost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
 	try {
+		//The populate function in Mongoose is used to replace the specified paths in the document with documents from other collections. 
 		const posts = await Post.find()
 			.sort({ createdAt: -1 })//gives latest post at top
 			.populate({
@@ -140,7 +141,7 @@ export const getAllPosts = async (req, res) => {
 				select: "-password",//remove the password to be shown
 			})
 			.populate({//info for the comments 
-				path: "comments.user",
+				path: "comments.user",//post me user hoga then comments hoga . to wo sab find krna hai
 				select: "-password",//remove the password to be shown
 			});
 
@@ -162,7 +163,7 @@ export const getLikedPosts = async (req, res) => {
 		const user = await User.findById(userId);
 		if (!user) return res.status(404).json({ error: "User not found" });
 
-		const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
+		const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })//the $in operator is being used to find all posts whose _id field is included in the likedPosts array of the specified user.
 			.populate({
 				path: "user",
 				select: "-password",

@@ -7,6 +7,10 @@ import User from "../models/user.model.js";
 
 export const getUserProfile = async (req, res) => {
 	const { username } = req.params;
+	//When defining routes in an Express application, you can specify parameters in the URL by using a colon (:) followed by the parameter name.
+	// For example, if your route is defined as /users/:username, then :username is a route parameter.
+	// When a request is made to /users/johndoe, req.params will be an object like { username: 'johndoe' }.
+	//same as const username = req.params.username; // username is now 'johndoe'
 
 	try {
 		const user = await User.findOne({ username }).select("-password");
@@ -23,34 +27,34 @@ export const followUnfollowUser = async (req, res) => {
 	try {
 		const { id } = req.params;
 		const userToModify = await User.findById(id);
-		const currentUser = await User.findById(req.user._id);
+		const currentUser = await User.findById(req.user._id);//req.user = from protectRoutes ._id is convention to fetch id
 
-		if (id === req.user._id.toString()) {
+		if (id === req.user._id.toString()) {//cant compare string to objectId type so first compare
 			return res.status(400).json({ error: "You can't follow/unfollow yourself" });
 		}
 
 		if (!userToModify || !currentUser) return res.status(400).json({ error: "User not found" });
 
-		const isFollowing = currentUser.following.includes(id);
+		const isFollowing = currentUser.following.includes(id);//.includes() returns a boolean value
     //push and pull are two methods of mongoose to remove or add to the array
 		if (isFollowing) {
 			// Unfollow the user
-			await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
+			await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });//followers,following from model
 			await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
 
 			res.status(200).json({ message: "User unfollowed successfully" });
 		} else {
 			// Follow the user
-			await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
+			await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });//this is updated by itself in db so no need to do .save()
 			await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
 			// Send notification to the user
-			const newNotification = new Notification({
+			const newNotification = new Notification({//notification model
 				type: "follow",
 				from: req.user._id,
-				to: userToModify._id,
+				to: userToModify._id,//can be written in any order
 			});
 
-			await newNotification.save();//save the notific to the database
+			await newNotification.save();//save the notification to the database
 
 			res.status(200).json({ message: "User followed successfully" });
 		}
@@ -62,10 +66,12 @@ export const followUnfollowUser = async (req, res) => {
 
 export const getSuggestedUsers = async (req, res) => {
 	try {
-		const userId = req.user._id;
-
-		const usersFollowedByMe = await User.findById(userId).select("following");
+		const userId = req.user._id;//string value
+		
+		//includes curr user's id and a list of their followings whom they follow
+		const usersFollowedByMe = await User.findById(userId).select("following");//following from model;it is an object
     
+		//Uses MongoDB's aggregation framework to get a random sample of 10 users who are not the current user ($ne: userId).
 		const users = await User.aggregate([
 			{
 				$match: {
@@ -76,12 +82,13 @@ export const getSuggestedUsers = async (req, res) => {
 		]);
 
 		// 1,2,3,4,5,6,
-    //excluding me and the users akready followed by me
+    // Filters out users from the sampled users who are already followed by the current user and the user itself.
 		const filteredUsers = users.filter((user) => !usersFollowedByMe.following.includes(user._id));
 
 		const suggestedUsers = filteredUsers.slice(0, 4);
+		//Takes the first 4 users from the filtered list of users to create a list of suggested users.
 
-		suggestedUsers.forEach((user) => (user.password = null));//so that password is not show to other users;also it does not change the info of database;only affects the end response
+		suggestedUsers.forEach((user) => (user.password = null));//Iterates over the list of suggested users and sets their password field to null to ensure it is not included in the response.
 
 		res.status(200).json(suggestedUsers);
 	} catch (error) {
@@ -92,6 +99,8 @@ export const getSuggestedUsers = async (req, res) => {
 
 export const updateUser = async (req, res) => {
 	const { fullName, email, username, currentPassword, newPassword, bio, link } = req.body;
+	//These variables (fullName, email, username, etc.) originate from user input or data submitted by the client application.
+	// For example, if this code is part of a form submission in a web application, req.body might contain data entered by the user into input fields (like fullName, email, etc.).
 	let { profileImg, coverImg } = req.body;
 
 	const userId = req.user._id;
@@ -111,8 +120,9 @@ export const updateUser = async (req, res) => {
 			if (newPassword.length < 6) {
 				return res.status(400).json({ error: "Password must be at least 6 characters long" });
 			}
-
-			const salt = await bcrypt.genSalt(10);
+      //hashing
+			const salt = await bcrypt.genSalt(10);//The rounds parameter (in this case, 10) determines the complexity of the hashing algorithm by specifying the number of iterations to generate the salt.
+			// More rounds increase the computational cost for an attacker trying to brute-force the hashed password.
 			user.password = await bcrypt.hash(newPassword, salt);
 		}
 
@@ -135,6 +145,14 @@ export const updateUser = async (req, res) => {
 			}
 
 			const uploadedResponse = await cloudinary.uploader.upload(coverImg);
+			// Example uploadedResponse structure
+			// {
+			//   public_id: 'sample_id',
+			//   secure_url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
+			//   format: 'jpg',
+			//   created_at: '2024-07-04T12:00:00Z',
+			//   bytes: 1024
+			// }
 			coverImg = uploadedResponse.secure_url;
 		}
   

@@ -12,3 +12,7 @@ export const generateTokenAndSetCookie = (userId, res) => {
 		secure: process.env.NODE_ENV !== "development",
 	});
 };
+
+// httpOnly: true: Ensures the cookie is only accessible by the server, preventing client-side JavaScript access (mitigates XSS attacks).
+// sameSite: "strict": Restricts the cookie to be sent in first-party context only, reducing the risk of CSRF attacks.
+// secure: process.env.NODE_ENV !== "development": Ensures the cookie is sent over HTTPS only in production environments (NODE_ENV !== "development")

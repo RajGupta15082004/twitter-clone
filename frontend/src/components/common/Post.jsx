@@ -61,6 +61,7 @@ const Post = ({ post }) => {
 					</div>
 					<div className='flex justify-between mt-3'>
 						<div className='flex gap-4 items-center w-2/3 justify-between'>
+						{/* This div acts as a trigger for opening a modal dialog when clicked. The modal dialog's ID is dynamically created using the post._id to ensure that the correct modal is shown for the corresponding post. */}
 							<div
 								className='flex gap-1 items-center cursor-pointer group'
 								onClick={() => document.getElementById("comments_modal" + post._id).showModal()}
@@ -71,6 +72,7 @@ const Post = ({ post }) => {
 								</span>
 							</div>
 							{/* We're using Modal Component from DaisyUI */}
+							{/* model ke aandar ka maal */}
 							<dialog id={`comments_modal${post._id}`} className='modal border-none outline-none'>
 								<div className='modal-box rounded border border-gray-600'>
 									<h3 className='font-bold text-lg mb-4'>COMMENTS</h3>

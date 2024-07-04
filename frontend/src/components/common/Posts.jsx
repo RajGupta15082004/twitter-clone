@@ -18,7 +18,7 @@ const Posts = () => {
 			{!isLoading && POSTS && (
 				<div>
 					{POSTS.map((post) => (
-						<Post key={post._id} post={post} />
+						<Post key={post._id} post={post} />//calls the post.jsx with post as prop
 					))}
 				</div>
 			)}

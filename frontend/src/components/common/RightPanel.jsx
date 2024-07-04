@@ -21,6 +21,7 @@ const RightPanel = () => {
 					)}
 					{!isLoading &&
 						USERS_FOR_RIGHT_PANEL?.map((user) => (
+							//Navigation
 							<Link
 								to={`/profile/${user.username}`}
 								className='flex items-center justify-between gap-4'
@@ -44,6 +45,9 @@ const RightPanel = () => {
 										className='btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm'
 										onClick={(e) => e.preventDefault()}
 									>
+										{/* e.preventDefault() prevents the default behavior of the button, which typically would cause the page to reload or change its state.
+In this case, it ensures that clicking the "Follow" button does not trigger a page reload or any other default browser behavior. */}
+
 										Follow
 									</button>
 								</div>

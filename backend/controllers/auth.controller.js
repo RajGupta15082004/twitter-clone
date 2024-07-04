@@ -40,7 +40,7 @@ export const signup = async (req, res) => {
 			generateTokenAndSetCookie(newUser._id, res);
 			await newUser.save();//creating the user in our database
 
-			res.status(201).json({
+			res.status(201).json({//response
 				_id: newUser._id,
 				fullName: newUser.fullName,
 				username: newUser.username,
@@ -90,6 +90,11 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
 	try {
 		res.cookie("jwt", "", { maxAge: 0 });
+		// This line of code is used to clear the JWT (JSON Web Token) cookie named "jwt".
+		// res.cookie() is an Express response method used to set cookies.
+		// "jwt" is the name of the cookie that holds the JWT token used for authentication.
+		// "" (an empty string) is the value assigned to the cookie. Setting an empty value effectively clears the cookie.
+		// { maxAge: 0 } specifies that the cookie should expire immediately. This ensures that the cookie is no longer valid and will be removed from the client's browser.
 		res.status(200).json({ message: "Logged out successfully" });
 	} catch (error) {
 		console.log("Error in logout controller", error.message);
