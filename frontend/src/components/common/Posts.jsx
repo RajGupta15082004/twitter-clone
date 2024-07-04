@@ -33,8 +33,8 @@ const Posts = ({ feedType, username, userId }) => {
 				const res = await fetch(POST_ENDPOINT);
 				const data = await res.json();
 
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
+				if (!res.ok) {//response thats why res.ok is checked
+					throw new Error(data.error || "Something went wrong");//object thats why data.error is checked
 				}
 
 				return data;
