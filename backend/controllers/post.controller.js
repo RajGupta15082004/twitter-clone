@@ -106,6 +106,8 @@ export const likeUnlikePost = async (req, res) => {
 			await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
 			await User.updateOne({ _id: userId }, { $pull: { likedPosts: postId } });//to get/not get liked posts of a user
 
+
+			//we are now updating the likes array after liking or disliking ; this helps in fetching data for that post only rather than invaliding for entire posts
 			const updatedLikes = post.likes.filter((id) => id.toString() !== userId.toString());
 			res.status(200).json(updatedLikes);
 		} else {

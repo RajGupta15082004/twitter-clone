@@ -63,11 +63,11 @@ const Post = ({ post }) => {
 			// this is not the best UX, bc it will refetch all posts
 			// queryClient.invalidateQueries({ queryKey: ["posts"] });
 
-			// instead, update the cache directly for that post
+			// instead, update the cache directly for that post only
 			queryClient.setQueryData(["posts"], (oldData) => {
 				return oldData.map((p) => {
 					if (p._id === post._id) {
-						return { ...p, likes: updatedLikes };
+						return { ...p, likes: updatedLikes };//this means return all the other values of the posts just updating the likes part in it
 					}
 					return p;
 				});
@@ -173,6 +173,7 @@ const Post = ({ post }) => {
 								</span>
 							</div>
 							{/* We're using Modal Component from DaisyUI */}
+							{/* every comment box is unique */}
 							<dialog id={`comments_modal${post._id}`} className='modal border-none outline-none'>
 								<div className='modal-box rounded border border-gray-600'>
 									<h3 className='font-bold text-lg mb-4'>COMMENTS</h3>
@@ -183,7 +184,7 @@ const Post = ({ post }) => {
 											</p>
 										)}
 										{post.comments.map((comment) => (
-											<div key={comment._id} className='flex gap-2 items-start'>
+											<div key={comment._id} className='flex gap-2 items-start'> 
 												<div className='avatar'>
 													<div className='w-8 rounded-full'>
 														<img
